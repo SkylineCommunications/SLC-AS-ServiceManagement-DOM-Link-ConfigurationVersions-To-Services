@@ -3,8 +3,6 @@ namespace ServiceManagementDOMLinkConfigurationVersionsToServices
 	using System;
 	using System.Collections.Generic;
 
-	using Newtonsoft.Json;
-
 	using ServiceManagement_DOM_Link_ConfigurationVersions_To_Services.DomIds;
 
 	using Skyline.DataMiner.Automation;
@@ -63,7 +61,6 @@ namespace ServiceManagementDOMLinkConfigurationVersionsToServices
 			var domHelper = new DomHelper(engine.SendSLNetMessages, SlcServicemanagement.ModuleId);
 
 			var configurationPreviousVersionMap = UpdateServiceConfigurationVersionDomDefinition(domHelper);
-			engine.GenerateInformation($"Map: {JsonConvert.SerializeObject(configurationPreviousVersionMap)}");
 			UpdateServiceDomDefinition(domHelper, configurationPreviousVersionMap);
 		}
 
@@ -102,12 +99,14 @@ namespace ServiceManagementDOMLinkConfigurationVersionsToServices
 			var configurationVersions = new List<Guid>();
 
 			Guid? configVersionToAdd = currentConfigurationVersion?.Value;
-			while (configVersionToAdd != null && configVersionToAdd.Value != Guid.Empty)
+			if (configVersionToAdd != null)
 			{
 				configurationVersions.Add(configVersionToAdd.Value);
-				configVersionToAdd = configurationPreviousVersionMap.ContainsKey(configVersionToAdd.Value)
-					? configurationPreviousVersionMap[configVersionToAdd.Value]
-					: null;
+
+				if (configurationPreviousVersionMap.TryGetValue(configVersionToAdd.Value, out var previousVersion) && previousVersion != null)
+				{
+					configurationVersions.Add(previousVersion.Value);
+				}
 			}
 
 			domInstance.AddOrUpdateListFieldValue(SlcServicemanagement.Sections.ServiceInfo.Id, SlcServicemanagement.Sections.ServiceInfo.ConfigurationVersions, configurationVersions);
@@ -153,6 +152,7 @@ namespace ServiceManagementDOMLinkConfigurationVersionsToServices
 			Dictionary<Guid, Guid?> configurationPreviousVersionMap = new Dictionary<Guid, Guid?>();
 
 			var configurationsPagingHelper = domHelper.DomInstances.PreparePaging(DomInstanceExposers.DomDefinitionId.Equal(SlcServicemanagement.Definitions.ServiceConfigurationVersion.Id), 100);
+			var createAtvalue = DateTime.UtcNow;
 			while (configurationsPagingHelper.MoveToNextPage())
 			{
 				List<DomInstance> currentPage = configurationsPagingHelper.GetCurrentPage();
@@ -162,6 +162,7 @@ namespace ServiceManagementDOMLinkConfigurationVersionsToServices
 					configurationPreviousVersionMap[domInstance.ID.Id] = previousVersion?.Value;
 
 					domInstance.RemoveFieldValue(SlcServicemanagement.Sections.ServiceConfigurationInfo.Id, SlcServicemanagement.Sections.ServiceConfigurationInfo.PreviousVersion);
+					domInstance.AddOrUpdateFieldValue(SlcServicemanagement.Sections.ServiceConfigurationInfo.Id, SlcServicemanagement.Sections.ServiceConfigurationInfo.CreatedAt, createAtvalue);
 					domHelper.DomInstances.Update(domInstance);
 				}
 			}

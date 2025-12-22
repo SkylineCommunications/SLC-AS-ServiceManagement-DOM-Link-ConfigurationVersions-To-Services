@@ -2,7 +2,7 @@
 
 ## About
 
-This update enhances the  **Service Management DOM** by adding a reference list field to the Service DOM Definition, linking it to all associated Service Configuration Versions.
+This update enhances the **Service Management DOM** by adding a reference list field to the Service DOM Definition, linking it to all associated Service Configuration Versions.
 For existing Services, this field will be populated by tracing the assigned configuration and following its chain of previous references through to the final version.
 
 ## Key Features
@@ -13,5 +13,5 @@ For existing Services, this field will be populated by tracing the assigned conf
 - **Service Data Migration**  
   Automatically updates existing Services to include references to their associated Service Configuration Versions, ensuring consistency, traceability, and maintainability.
 
-- **Enhanced Configuration Management**	
+- **Enhanced Configuration Management**
   Simplifies transitions between different configurations, making Service updates more flexible and reducing operational complexity.
