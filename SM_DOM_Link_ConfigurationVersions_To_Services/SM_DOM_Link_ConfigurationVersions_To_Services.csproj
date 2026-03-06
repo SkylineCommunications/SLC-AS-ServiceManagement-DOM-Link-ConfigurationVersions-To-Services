@@ -13,7 +13,7 @@
 		<CatalogPublishKeyName>skyline:sdk:dataminertoken</CatalogPublishKeyName>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.3.0.25" />
 		<PackageReference Include="Skyline.DataMiner.Files.SLNetTypes" Version="10.5.2" />
 		<PackageReference Include="Skyline.DataMiner.Utils.DOM" Version="10.5.2.5" />
